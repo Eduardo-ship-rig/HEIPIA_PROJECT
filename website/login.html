@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeIPIA - Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-terminal {
+            background: #0a0c10;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 2px rgba(0, 255, 136, 0.2) inset,
+                0 0 30px rgba(0, 255, 136, 0.2);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background: #ff5f56;
+        }
+
+        .dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .dot-green {
+            background: #27c93f;
+        }
+
+        .terminal-title {
+            color: #00ff88;
+            font-size: 14px;
+            margin-left: auto;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .ascii-small {
+            color: #00ff88;
+            font-size: 12px;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            color: #00ff88;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .input-label::before {
+            content: '$';
+            color: #00ff88;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: #fff;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .login-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0 15px;
+        }
+
+        .btn {
+            flex: 1;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border-color: #00ff88;
+        }
+
+        .btn-primary:hover {
+            background: rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #fff;
+        }
+
+        .message {
+            color: #ff5f56;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        .success-message {
+            color: #00ff88;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #00ff88;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- CONFIGURACIÓN SUPABASE - ¡REEMPLAZA CON TUS DATOS! -->
+    <script>
+        const SUPABASE_URL = 'https://tu-proyecto.supabase.co';
+        const SUPABASE_ANON_KEY = 'tu-anon-key';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+
+    <div class="login-container">
+        <div class="login-terminal">
+            <div class="terminal-header">
+                <div class="terminal-dot dot-red"></div>
+                <div class="terminal-dot dot-yellow"></div>
+                <div class="terminal-dot dot-green"></div>
+                <span class="terminal-title">HeIPIA AUTH</span>
+            </div>
+
+            <div class="ascii-small">
+                ██╗ ██╗███████╗██╗██████╗ ██╗ █████╗
+                ██║ ██║██╔════╝██║██╔══██╗██║██╔══██╗
+                ███████║█████╗ ██║██████╔╝██║███████║
+                ██╔══██║██╔══╝ ██║██╔═══╝ ██║██╔══██║
+                ██║ ██║███████╗██║██║ ██║██║ ██║
+                ╚═╝ ╚═╝╚══════╝╚═╝╚═╝ ╚═╝╚═╝ ╚═╝
+            </div>
+
+            <div class="input-group">
+                <span class="input-label">email</span>
+                <input type="email" class="input-field" id="email" placeholder="usuario@ejemplo.com">
+            </div>
+
+            <div class="input-group">
+                <span class="input-label">password</span>
+                <input type="password" class="input-field" id="password" placeholder="••••••••">
+            </div>
+
+            <div class="login-buttons">
+                <button class="btn btn-primary" onclick="handleLogin()">INGRESAR</button>
+                <button class="btn btn-secondary" onclick="handleRegister()">REGISTRAR</button>
+            </div>
+
+            <div class="message" id="message"></div>
+
+            <div class="footer">
+                <span>© 2024 HeIPIA | </span>
+                <a href="#" onclick="logout()">CERRAR SESIÓN</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FUNCIONES DE AUTENTICACIÓN
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageEl = document.getElementById('message');
+
+            if (!email || !password) {
+                showMessage('Email y password requeridos', 'error');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                if (data.user) {
+                    showMessage('✓ Login exitoso!', 'success');
+                    console.log('Usuario logueado:', data.user.email);
+                    // Aquí puedes redirigir o hacer algo después del login
+                }
+            } catch (error) {
+                showMessage('✗ ' + error.message, 'error');
+            }
+        }
+
+        async function handleRegister() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageEl = document.getElementById('message');
+
+            if (!email || !password) {
+                showMessage('Email y password requeridos', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                if (data.user) {
+                    showMessage('✓ Registro exitoso! Revisa tu email', 'success');
+                    console.log('Usuario registrado:', data.user.email);
+                }
+            } catch (error) {
+                showMessage('✗ ' + error.message, 'error');
+            }
+        }
+
+        async function logout() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                showMessage('✓ Sesión cerrada', 'success');
+            } catch (error) {
+                showMessage('✗ ' + error.message, 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = 'message active';
+            if (type === 'success') {
+                messageEl.classList.add('success-message');
+            } else {
+                messageEl.classList.remove('success-message');
+            }
+        }
+
+        // VERIFICAR SESIÓN ACTUAL
+        async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                showMessage('✓ Sesión activa: ' + session.user.email, 'success');
+            }
+        }
+
+        // EJECUTAR AL CARGAR
+        checkSession();
+    </script>
+</body>
+
+</html>
