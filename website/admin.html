@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeIPIA - Panel Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            height: 70px;
+            background: rgba(10, 14, 23, 0.95);
+            backdrop-filter: blur(10px);
+            color: #00ff88;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 4px 30px rgba(0, 255, 136, 0.1);
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h2 {
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            position: relative;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .navbar h2::after {
+            content: '_ADMIN';
+            font-size: 14px;
+            color: #ff0;
+            margin-left: 10px;
+        }
+
+        .nav-links {
+            margin-left: auto;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #00ff88;
+        }
+
+        .container {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .admin-panel {
+            background: #0a0c10;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 2px rgba(0, 255, 136, 0.2) inset;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .panel-header h1 {
+            color: #00ff88;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .badge {
+            background: rgba(255, 255, 0, 0.2);
+            border: 1px solid #ff0;
+            color: #ff0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 15px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #00ff88;
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '>';
+            color: #00ff88;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 6px;
+            color: #00ff88;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .file-upload {
+            border: 2px dashed rgba(0, 255, 136, 0.3);
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .file-upload i {
+            font-size: 40px;
+            color: #00ff88;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .file-upload span {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #00ff88;
+            color: #0a0c10;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-primary {
+            background: #00ff88;
+            color: #0a0c10;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: #00ff88;
+        }
+
+        .btn-danger {
+            border-color: #ff5555;
+            color: #ff5555;
+        }
+
+        .btn-danger:hover {
+            background: #ff5555;
+            color: #0a0c10;
+        }
+
+        .status-card {
+            background: rgba(0, 255, 136, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid #00ff88;
+        }
+
+        .status-title {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .status-desc {
+            color: #ccc;
+            font-size: 13px;
+        }
+
+        .version-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .version-table th {
+            text-align: left;
+            color: #00ff88;
+            padding: 10px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+            font-size: 14px;
+        }
+
+        .version-table td {
+            padding: 10px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+        }
+
+        .version-table tr:hover td {
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .version-badge {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .download-link {
+            color: #00ff88;
+            text-decoration: none;
+            border-bottom: 1px dashed #00ff88;
+        }
+
+        .download-link:hover {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .loader {
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-top: 2px solid #00ff88;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0a0c10;
+            border-left: 3px solid #00ff88;
+            padding: 15px 20px;
+            border-radius: 6px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            border-left-color: #ff5555;
+        }
+
+        .toast.success {
+            border-left-color: #00ff88;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .admin-key {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #333;
+            padding: 5px;
+            font-size: 10px;
+            border-radius: 3px;
+            user-select: none;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffaa00;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #ffaa00;
+            font-size: 13px;
+        }
+    </style>
+    <!-- Cargar Supabase primero -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Luego tu archivo de conexión -->
+    <script src="conexion.js"></script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <h2>HeIPIA</h2>
+        <div class="nav-links">
+            <a href="index.html">← VOLVER</a>
+        </div>
+    </nav>
+
+    <div class="container" id="adminContainer">
+        <div class="admin-panel">
+            <div class="panel-header">
+                <h1>PANEL DE ADMINISTRACIÓN</h1>
+                <span class="badge">ACCESO DIRECTO</span>
+            </div>
+
+            <!-- Info sobre límites de Supabase -->
+            <div class="info-box">
+                ⚠️ Límite de Supabase Storage: 50MB por archivo en plan gratuito
+            </div>
+
+            <!-- Versión Actual -->
+            <div class="section">
+                <div class="section-title">VERSIÓN ACTUAL</div>
+                <div class="status-card success" id="currentVersionCard">
+                    <div class="status-title" id="currentVersion">Cargando...</div>
+                    <div class="status-desc" id="currentVersionDate"></div>
+                </div>
+            </div>
+
+            <!-- Subir Nueva Versión -->
+            <div class="section">
+                <div class="section-title">SUBIR NUEVA VERSIÓN</div>
+
+                <div class="form-group">
+                    <label>Número de Versión</label>
+                    <input type="text" id="versionNumber" placeholder="Ej: 1.2.0">
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción de Cambios</label>
+                    <textarea id="versionChanges"
+                        placeholder="• Nueva funcionalidad X&#10;• Corrección de bug Y&#10;• Mejora en rendimiento"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Versión</label>
+                    <select id="versionType">
+                        <option value="stable">Estable</option>
+                        <option value="beta">Beta</option>
+                        <option value="alpha">Alpha</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Archivo Instalador (.exe/.msi) - Máx 50MB</label>
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <i>📦</i>
+                        <span id="fileName">Haz clic para seleccionar archivo</span>
+                    </div>
+                    <input type="file" id="fileInput" style="display: none;" accept=".exe,.msi,.zip">
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="subirVersion()" id="uploadBtn">
+                        <span class="loader hidden" id="uploadLoader"></span>
+                        SUBIR VERSIÓN
+                    </button>
+                </div>
+            </div>
+
+            <!-- Historial de Versiones -->
+            <div class="section">
+                <div class="section-title">HISTORIAL DE VERSIONES</div>
+                <table class="version-table" id="versionsTable">
+                    <thead>
+                        <tr>
+                            <th>Versión</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Cambios</th>
+                            <th>Archivo</th>
+                            <th>Descargas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="versionsList">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #666;">Cargando versiones...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+    <div class="admin-key">🔧 PANEL ADMIN</div>
+<script src="./js/conexion.js"></script>
+    <script>
+        // Verificar que db está disponible
+        if (typeof db === 'undefined') {
+            console.error('❌ db no está definido. Verifica que conexion.js se cargó correctamente.');
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarVersionActual();
+            cargarHistorialVersiones();
+        });
+
+        // Cargar versión actual
+        async function cargarVersionActual() {
+            try {
+                const { data, error } = await db
+                    .from('versiones')
+                    .select('*')
+                    .order('fecha', { ascending: false })
+                    .limit(1);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    const v = data[0];
+                    document.getElementById('currentVersion').innerHTML = `HeIPIA v${v.version} <span class="version-badge">${v.tipo}</span>`;
+                    document.getElementById('currentVersionDate').textContent = `Publicada: ${new Date(v.fecha).toLocaleDateString()}`;
+                } else {
+                    document.getElementById('currentVersion').innerHTML = 'No hay versiones';
+                }
+            } catch (error) {
+                console.error('Error cargando versión:', error);
+                document.getElementById('currentVersion').innerHTML = 'Error cargando versión';
+            }
+        }
+
+        // Cargar historial de versiones
+        async function cargarHistorialVersiones() {
+            try {
+                const { data, error } = await db
+                    .from('versiones')
+                    .select('*')
+                    .order('fecha', { ascending: false });
+
+                if (error) throw error;
+
+                const tbody = document.getElementById('versionsList');
+
+                if (data && data.length > 0) {
+                    tbody.innerHTML = data.map(v => `
+                        <tr>
+                            <td><strong>${v.version}</strong></td>
+                            <td><span class="version-badge">${v.tipo}</span></td>
+                            <td>${new Date(v.fecha).toLocaleDateString()}</td>
+                            <td>${v.cambios || '-'}</td>
+                            <td><a href="${v.url_archivo}" class="download-link" target="_blank">📦 Descargar</a></td>
+                            <td>${v.descargas || 0}</td>
+                            <td>
+                                <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="eliminarVersion('${v.id}')">🗑️</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">No hay versiones registradas</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error cargando historial:', error);
+            }
+        }
+
+        // Subir nueva versión
+        async function subirVersion() {
+            const version = document.getElementById('versionNumber').value;
+            const cambios = document.getElementById('versionChanges').value;
+            const tipo = document.getElementById('versionType').value;
+            const fileInput = document.getElementById('fileInput');
+
+            if (!version || !cambios || !fileInput.files[0]) {
+                mostrarToast('Completa todos los campos', 'error');
+                return;
+            }
+
+            // Validar tamaño del archivo (50MB máximo)
+            const file = fileInput.files[0];
+            const maxSize = 50 * 1024 * 1024; // 50MB en bytes
+
+            if (file.size > maxSize) {
+                mostrarToast('El archivo excede el límite de 50MB de Supabase', 'error');
+                return;
+            }
+
+            // Mostrar loader
+            document.getElementById('uploadLoader').classList.remove('hidden');
+            document.getElementById('uploadBtn').disabled = true;
+
+            try {
+                // Generar nombre del archivo (evitar duplicados)
+                const timestamp = Date.now();
+                const fileName = `HeIPIA-${version}-${timestamp}.exe`;
+
+                console.log('📤 Subiendo archivo:', fileName, 'Tamaño:', file.size, 'bytes');
+
+                // Subir archivo a Storage
+                const { error: uploadError } = await db
+                    .storage
+                    .from('instaladores')
+                    .upload(fileName, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+
+                if (uploadError) {
+                    console.error('Error de upload:', uploadError);
+                    throw uploadError;
+                }
+
+                console.log('✅ Archivo subido correctamente');
+
+                // Obtener URL pública
+                const { data: urlData } = db
+                    .storage
+                    .from('instaladores')
+                    .getPublicUrl(fileName);
+
+                console.log('🔗 URL pública:', urlData.publicUrl);
+
+                // Registrar versión en BD
+                const nuevaVersion = {
+                    version: version,
+                    tipo: tipo,
+                    cambios: cambios,
+                    url_archivo: urlData.publicUrl,
+                    fecha: new Date().toISOString(),
+                    descargas: 0
+                };
+
+                const { error: insertError } = await db
+                    .from('versiones')
+                    .insert([nuevaVersion]);
+
+                if (insertError) throw insertError;
+
+                mostrarToast('✅ Versión publicada exitosamente', 'success');
+
+                // Limpiar formulario
+                document.getElementById('versionNumber').value = '';
+                document.getElementById('versionChanges').value = '';
+                document.getElementById('fileName').textContent = 'Haz clic para seleccionar archivo';
+                document.getElementById('fileInput').value = '';
+
+                // Recargar datos
+                cargarVersionActual();
+                cargarHistorialVersiones();
+
+            } catch (error) {
+                console.error('❌ Error detallado:', error);
+
+                let mensajeError = 'Error al publicar versión';
+                if (error.message) {
+                    mensajeError += ': ' + error.message;
+                }
+                mostrarToast(mensajeError, 'error');
+            } finally {
+                document.getElementById('uploadLoader').classList.add('hidden');
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+
+        // Eliminar versión
+        async function eliminarVersion(id) {
+            if (!confirm('¿Eliminar esta versión?')) return;
+
+            try {
+                const { error } = await db
+                    .from('versiones')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                mostrarToast('Versión eliminada', 'success');
+                cargarHistorialVersiones();
+                cargarVersionActual();
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('Error al eliminar', 'error');
+            }
+        }
+
+        // Mostrar nombre del archivo seleccionado
+        document.getElementById('fileInput').addEventListener('change', function (e) {
+            if (this.files[0]) {
+                const file = this.files[0];
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                document.getElementById('fileName').textContent = `${file.name} (${sizeMB} MB)`;
+            }
+        });
+
+        // Toast notification
+        function mostrarToast(mensaje, tipo = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensaje;
+            toast.className = `toast ${tipo}`;
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

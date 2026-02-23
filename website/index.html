@@ -390,6 +390,7 @@
             margin: 10px 0;
             transition: all 0.3s ease;
             border: 1px solid #00ff88;
+            cursor: pointer;
         }
 
         .download-btn:hover {
@@ -513,7 +514,19 @@
                 font-size: 8px;
             }
         }
+
+        .version-info {
+            background: rgba(0, 255, 136, 0.05);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-left: 3px solid #00ff88;
+        }
     </style>
+    <!-- Cargar Supabase primero -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Luego tu archivo de conexión -->
+    <script src="conexion.js"></script>
 </head>
 
 <body>
@@ -533,7 +546,7 @@
                 <div class="terminal-dot dot-red"></div>
                 <div class="terminal-dot dot-yellow"></div>
                 <div class="terminal-dot dot-green"></div>
-                <span class="terminal-title">HeIPIA v1.1.0 - Calculadora VLSM Profesional</span>
+                <span class="terminal-title">HeIPIA - Calculadora VLSM Profesional</span>
             </div>
 
             <div class="terminal-content">
@@ -553,16 +566,15 @@
                     <span class="prompt">$</span>
                     <span class="command">./heipia --info</span>
                 </div>
-                <div class="output">
+                <div class="output" id="infoOutput">
                     <span class="highlight">HeIPIA</span> > Calculadora profesional de subredes VLSM<br>
-                    <span class="highlight">Versión</span> > 1.1.0 Estable<br>
+                    <span class="highlight">Versión</span> > <span id="versionDisplay">Cargando...</span><br>
                     <span class="highlight">Lenguaje</span> > Java 17+<br>
                     <span class="highlight">Licencia</span> > MIT<br>
                     <span class="highlight">Arquitectura</span> > CLI modular<br>
                     <span class="highlight">Soporte</span> > Redes empresariales y SOHO<br>
                     <span class="highlight">Guardado</span> > Exporta a TXT en Downloads<br>
-                    <span class="highlight">Estado</span> > Versión pública disponible <span
-                        class="badge">Estable</span>
+                    <span class="highlight">Estado</span> > <span id="statusDisplay">Cargando...</span>
                 </div>
 
                 <div class="features" id="features">
@@ -641,19 +653,22 @@
                 <div class="installation" id="install">
                     <div class="section-title">DESCARGAR HEIPIA</div>
 
+                    <div class="version-info" id="latestVersionInfo">
+                        <span class="highlight">📦 Última versión disponible:</span> <span
+                            id="latestVersion">Cargando...</span>
+                    </div>
+
                     <div style="text-align: center; margin: 20px 0;">
-                        <a href="#" class="download-btn" onclick="simularDescarga()">⬇️ DESCARGAR HeIPIA v1.1.0 (MSI
-                            Installer)</a>
+                        <button class="download-btn" id="downloadBtn">⬇️ DESCARGAR ÚLTIMA VERSIÓN</button>
                     </div>
 
                     <div class="line">
                         <span class="prompt">$</span>
-                        <span class="command"># Windows (MSI Installer)</span>
+                        <span class="command"># Windows (Instalador)</span>
                     </div>
                     <div class="code-block">
-                        📥 Archivo: HeIPIA-1.1.0.msi
+                        📥 Archivo: HeIPIA-[version].exe
                         📂 Se instalará en: C:\Program Files\HeIPIA\
-                        💾 Peso aproximado: 2.5 MB
                     </div>
 
                     <div class="line">
@@ -661,29 +676,9 @@
                         <span class="command"># Desde GitHub (código fuente)</span>
                     </div>
                     <div class="code-block">
-                        git clone https://github.com/Eduardo-ship-rig/HEIPIA_PROJECT
-
+                        git clone https://github.com/cesaralbiter/heipia.git
                         cd heipia
-                        java -jar heipia-1.1.0.jar
-                    </div>
-
-                    <div class="line">
-                        <span class="prompt">$</span>
-                        <span class="command"># Verificar instalación</span>
-                    </div>
-                    <div class="code-block">
-                        heipia --version
-                        > HeIPIA v1.1.0 (2026-02-22)
-                    </div>
-
-                    <div class="line">
-                        <span class="prompt">$</span>
-                        <span class="command"># Linux / macOS (manual)</span>
-                    </div>
-                    <div class="code-block">
-                        curl -L https://github.com/Eduardo-ship-rig/HEIPIA_PROJECT/releases/download/v1.1.0/heipia -o
-                        /usr/local/bin/heipia
-                        chmod +x /usr/local/bin/heipia
+                        java -jar heipia-[version].jar
                     </div>
 
                     <div style="margin-top: 20px; padding: 10px; background: rgba(0,255,136,0.1); border-radius: 8px;">
@@ -697,13 +692,13 @@
                     <span class="command">heipia stats</span>
                 </div>
                 <div class="output">
-                    <span class="highlight">ESTADÍSTICAS v1.1.0</span><br>
+                    <span class="highlight">ESTADÍSTICAS</span><br>
                     Proyectos ejemplo: 3<br>
                     Rutas calculadas: 1,284<br>
                     Modo: Local/Online<br>
                     Opciones disponibles: 12<br>
-                    <span class="highlight">Última actualización:</span> Febrero 2026<br>
-                    <span class="highlight">Descargas estimadas:</span> 150+
+                    <span class="highlight">Última actualización:</span> <span id="lastUpdate">Cargando...</span><br>
+                    <span class="highlight">Descargas totales:</span> <span id="downloadCount">Cargando...</span>
                 </div>
             </div>
         </div>
@@ -721,57 +716,167 @@
         <span>|</span>
         <span>Java 17+</span>
         <br>
-        <span style="color: #00ff88;">"> v1.1.0 Estable · Calculadora VLSM profesional para toda escala _"</span>
+        <span style="color: #00ff88;">"> Calculadora VLSM profesional para toda escala _"</span>
     </footer>
+    <script src="./encryption_admin.js"></script>
+    <script src="./js/conexion.js"></script>
 
     <script>
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
+        // Script principal para index.html
+        document.addEventListener('DOMContentLoaded', async function () {
+            console.log('📄 Página cargada');
+            await cargarInfoVersion();
+
+            // Smooth scroll para los enlaces
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = document.querySelector(link.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
             });
         });
 
-        function simularDescarga() {
-            // Crear un enlace de descarga simulado
-            const contenido = `HeIPIA v1.1.0 - Calculadora VLSM Profesional
-=====================================
-Autor: @cesaralbiter
-Fecha: 2026-02-22
+        // Función para cargar información de la versión desde Supabase
+        async function cargarInfoVersion() {
+            try {
+                console.log('🔄 Cargando información de versión...');
 
-INSTRUCCIONES DE INSTALACIÓN:
-1. Ejecuta el instalador MSI
-2. Sigue los pasos del asistente
-3. Una vez instalado, abre terminal y escribe: heipia
+                // Verificar que db existe
+                if (typeof db === 'undefined') {
+                    console.error('❌ db no está definido');
+                    throw new Error('db no está definido');
+                }
 
-CARACTERÍSTICAS:
-- Calculadora de subredes VLSM
-- Soporte para /31 y /32
-- Exportación a TXT en Downloads
-- Validación de IPs
-- Detección de desbordamiento
+                // Obtener la última versión
+                const { data, error } = await db
+                    .from('versiones')
+                    .select('*')
+                    .order('fecha', { ascending: false })
+                    .limit(1);
 
-REQUISITOS:
-- Windows 10/11, Linux o macOS
-- Java 17 o superior
+                if (error) throw error;
 
-¡Gracias por usar HeIPIA!`;
+                const version = data && data.length > 0 ? data[0] : null;
 
-            const blob = new Blob([contenido], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'HeIPIA-1.1.0-INFO.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+                if (version) {
+                    document.getElementById('versionDisplay').innerHTML = `${version.version} <span class="badge">${version.tipo}</span>`;
+                    document.getElementById('latestVersion').textContent = `${version.version} (${version.tipo})`;
+                    document.getElementById('statusDisplay').innerHTML = `Versión pública <span class="badge">${version.tipo}</span>`;
+                    document.getElementById('lastUpdate').textContent = new Date(version.fecha).toLocaleDateString();
 
-            alert('✅ Archivo de información descargado. El instalador real estaría disponible en GitHub Releases.');
+                    // Actualizar textos que contienen [version]
+                    document.querySelectorAll('.code-block').forEach(block => {
+                        block.innerHTML = block.innerHTML.replace(/\[version\]/g, version.version);
+                    });
+                } else {
+                    document.getElementById('versionDisplay').innerHTML = '1.1.0 <span class="badge">stable</span>';
+                    document.getElementById('latestVersion').textContent = '1.1.0 (stable)';
+                    document.getElementById('statusDisplay').innerHTML = 'Versión pública <span class="badge">stable</span>';
+                    document.getElementById('lastUpdate').textContent = 'Febrero 2026';
+                }
+
+                // Obtener todas las versiones para contar descargas totales
+                const { data: todas, error: errorTodas } = await db
+                    .from('versiones')
+                    .select('descargas');
+
+                if (errorTodas) throw errorTodas;
+
+                const totalDescargas = todas ? todas.reduce((acc, v) => acc + (v.descargas || 0), 0) : 150;
+                document.getElementById('downloadCount').textContent = totalDescargas + '+';
+
+            } catch (error) {
+                console.error('❌ Error cargando versión:', error);
+                // Valores por defecto
+                document.getElementById('versionDisplay').innerHTML = '1.1.0 <span class="badge">stable</span>';
+                document.getElementById('latestVersion').textContent = '1.1.0 (stable)';
+                document.getElementById('statusDisplay').innerHTML = 'Versión pública <span class="badge">stable</span>';
+                document.getElementById('lastUpdate').textContent = 'Febrero 2026';
+                document.getElementById('downloadCount').textContent = '150+';
+            }
         }
+
+        // Script para detectar Ctrl+C+2 y redirigir a admin.html
+        (function () {
+            let teclas = [];
+            let ctrlPresionado = false;
+            const adminUrl = 'admin.html';
+
+            document.addEventListener('keydown', function (e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                if (e.key === 'Control') {
+                    ctrlPresionado = true;
+                    return;
+                }
+
+                if (ctrlPresionado) {
+                    e.preventDefault();
+                    teclas.push(e.key.toLowerCase());
+
+                    if (teclas.length === 2 && teclas[0] === 'c' && teclas[1] === '2') {
+                        window.location.href = adminUrl;
+                        teclas = [];
+                        ctrlPresionado = false;
+                    } else if (teclas.length > 2) {
+                        teclas = [];
+                    }
+
+                    setTimeout(() => { teclas = []; }, 2000);
+                }
+            });
+
+            document.addEventListener('keyup', function (e) {
+                if (e.key === 'Control') {
+                    ctrlPresionado = false;
+                    setTimeout(() => { if (!ctrlPresionado) teclas = []; }, 100);
+                }
+            });
+        })();
+
+        // Botón de descarga
+        document.getElementById('downloadBtn').addEventListener('click', async function () {
+            try {
+                console.log('⬇️ Iniciando descarga...');
+
+                // Verificar que db existe
+                if (typeof db === 'undefined') {
+                    alert('Error de conexión. Intenta más tarde.');
+                    return;
+                }
+
+                // Obtener la última versión
+                const { data, error } = await db
+                    .from('versiones')
+                    .select('*')
+                    .order('fecha', { ascending: false })
+                    .limit(1);
+
+                if (error) throw error;
+
+                const version = data && data.length > 0 ? data[0] : null;
+
+                if (version && version.url_archivo) {
+                    // Incrementar contador de descargas
+                    const nuevasDescargas = (version.descargas || 0) + 1;
+
+                    await db
+                        .from('versiones')
+                        .update({ descargas: nuevasDescargas })
+                        .eq('id', version.id);
+
+                    window.location.href = version.url_archivo;
+                } else {
+                    alert('URL de descarga no disponible. Pronto estará lista.');
+                }
+            } catch (error) {
+                console.error('❌ Error en descarga:', error);
+                alert('Error al descargar. Intenta más tarde.');
+            }
+        });
     </script>
 </body>
 
